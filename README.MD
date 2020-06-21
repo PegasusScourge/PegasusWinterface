@@ -8,7 +8,7 @@ Due to current implementation, the window recieving the events must be in focus 
 
 ## Requirements
 
- - SFML 2.5.1 (visual studio x64 version used to compile provided .lib)
+ - SFML 2.5.1
  
 ## License information
 
