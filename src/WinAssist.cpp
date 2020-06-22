@@ -130,50 +130,6 @@ bool WinAssist::checkWinHwndValidity(HWND hwnd) {
 	return IsWindow(hwnd);
 }
 
-//void WinAssist::sendKeyVk(KeyEvent key) {
-//	INPUT input[2];
-//
-//	input[0].ki.wVk = key;
-//	input[0].ki.wScan = 0;
-//	input[0].ki.dwFlags = 0; //press down;
-//	input[0].ki.time = 0;
-//	input[0].ki.dwExtraInfo = 0;
-//	input[0].type = INPUT_KEYBOARD;
-//
-//	input[1].ki.wVk = key;
-//	input[1].ki.wScan = 0;
-//	input[1].ki.dwFlags = KEYEVENTF_KEYUP;
-//	input[1].ki.time = 0;
-//	input[1].ki.dwExtraInfo = 0;
-//	input[1].type = INPUT_KEYBOARD;
-//
-//	SendInput(2, input, sizeof(INPUT));
-//	// std::cout << "Sent key (SendInput) '" << (char)key.vKey() << "'" << std::endl;
-//}
-//
-//void WinAssist::sendKeyScanCode(KeyEvent key) {
-//	INPUT input[2];
-//
-//	WORD scanCode = MapVirtualKey(key.vKey(), MAPVK_VK_TO_VSC);
-//
-//	// input[0].ki.wVk = key;
-//	input[0].ki.wScan = scanCode;
-//	input[0].ki.dwFlags = KEYEVENTF_SCANCODE; //press down;
-//	input[0].ki.time = 0;
-//	input[0].ki.dwExtraInfo = 0;
-//	input[0].type = INPUT_KEYBOARD;
-//
-//	// input[1].ki.wVk = key;
-//	input[1].ki.wScan = scanCode;
-//	input[1].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
-//	input[1].ki.time = 0;
-//	input[1].ki.dwExtraInfo = 0;
-//	input[1].type = INPUT_KEYBOARD;
-//
-//	SendInput(2, input, sizeof(INPUT));
-//	// std::cout << "Sent key (SendInput2) '" << (char)key.vKey() << "'" << std::endl;
-//}
-
 void WinAssist::sendKey(KeyEvent key) {
 	if (key.type() == KeyEvent::EventType::KEVT_NONE)
 		return;

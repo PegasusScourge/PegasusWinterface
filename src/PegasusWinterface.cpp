@@ -2,7 +2,7 @@
 
 PegasusWinterface
 
-Class that provides the ability to send keyboard and (hopefully at some point) mouse commands to 
+Class that provides the ability to send keyboard and mouse commands to 
 WinAPI windows.
 
 */

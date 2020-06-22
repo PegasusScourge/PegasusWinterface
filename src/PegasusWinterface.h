@@ -3,7 +3,7 @@
 
 PegasusWinterface
 
-Class that provides the ability to send keyboard and (hopefully at some point) mouse commands to
+Class that provides the ability to send keyboard and mouse commands to
 WinAPI windows.
 
 */
@@ -13,7 +13,6 @@ WinAPI windows.
 
 namespace pinterface {
 
-	// TODO
 	class TimedMouseEvent {
 /*******************************************************************************
 		class TimedMouseEvent, private
@@ -69,8 +68,6 @@ namespace pinterface {
 
 		WinInfo_t m_winInfo;
 		WinDimensions_t m_winDims;
-
-		/* Private member functions */
 
 /*******************************************************************************
 		class PegasusWinterface, public
