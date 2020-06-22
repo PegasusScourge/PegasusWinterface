@@ -157,7 +157,7 @@ WinDimensions_t PegasusWinterface::getWindowDimensions() {
 
 bool PegasusWinterface::bind(DWORD processID) {
 	// Count and list all the windows for us
-	std::vector<pi::WinInfo_t> windows = pi::WinAssist::getWindowList();
+	std::vector<pi::WinInfo_t> windows = pi::WinAssist::GetWindowList();
 
 	for (auto window : windows) {
 		if (window.pid == processID) {
@@ -180,7 +180,7 @@ bool PegasusWinterface::bind(std::string& str) {
 
 bool PegasusWinterface::bind(std::wstring& str) {
 	// Count and list all the windows for us
-	std::vector<pi::WinInfo_t> windows = pi::WinAssist::getWindowList();
+	std::vector<pi::WinInfo_t> windows = pi::WinAssist::GetWindowList();
 
 	for (auto window : windows) {
 		if (STD_WSTRING_CONTAINS(window.title, str)) {
@@ -225,7 +225,7 @@ void PegasusWinterface::tick() {
 	while (!emtpy && m_timingClockKey.getElapsedTimeAsMilliseconds() >= evt.delayBefore()) {
 		cout << "Non-blocking exec: ";
 		// Execute the event
-		WinAssist::sendKeys(m_winInfo, evt.getEvents());
+		WinAssist::SendKeys(m_winInfo, evt.getEvents());
 		m_timingClockKey.restart();
 		// Remove the event
 		m_keyBuffer.erase(m_keyBuffer.begin()); // Erase this event
@@ -252,7 +252,7 @@ void PegasusWinterface::executeKeys(std::vector<TimedKeyEvent> keys, bool append
 			// Wait until the key can be pressed
 			while (m_timingClockKey.getElapsedTimeAsMilliseconds() < evt.delayBefore());
 			// Execute the event
-			WinAssist::sendKeys(m_winInfo, evt.getEvents());
+			WinAssist::SendKeys(m_winInfo, evt.getEvents());
 			m_timingClockKey.restart();
 		}
 	}
@@ -277,7 +277,7 @@ void PegasusWinterface::executeMouse(std::vector<TimedMouseEvent> evts, bool app
 			// Wait until the key can be pressed
 			while (m_timingClockMouse.getElapsedTimeAsMilliseconds() < evt.delayBefore());
 			// Execute the event
-			WinAssist::sendMouseEvents(m_winInfo, evt.getEvents());
+			WinAssist::SendMouseEvents(m_winInfo, evt.getEvents());
 			m_timingClockMouse.restart();
 		}
 	}
@@ -296,5 +296,5 @@ void PegasusWinterface::update() {
 	if (!m_bound)
 		return;
 
-	m_winDims = WinAssist::getWindowDimensions(m_winInfo);
+	m_winDims = WinAssist::GetWindowDimensions(m_winInfo);
 }

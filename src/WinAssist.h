@@ -109,23 +109,23 @@ namespace pinterface {
 
 		/* Private static functions */
 		// Updates the names in the WIN_NAMES list to the currently open applications
-		static void updateWinNames();
+		static void UpdateWinNames();
 
 		// Checks the validity of the handle passed to it. WARNING: handle reuse may give the indication nothing has changed, further
 		// the window may change state immediately after the test. DO NOT USE AS A GUARANTEE, just an indication
-		static bool checkWinHwndValidity(HWND hwnd);
+		static bool CheckWinHwndValidity(HWND hwnd);
 
 		// Connects this thread to another thread
-		static bool	connectToThread(WinInfo_t window);
+		static bool	ConnectToThread(WinInfo_t window);
 
 		// Disconnects this thread from another thread
-		static bool disconnectThread(WinInfo_t window);
+		static bool DisconnectThread(WinInfo_t window);
 
 		// Sends a key to another thread. MUST BE CONNECTED BEFORE DOING SO
-		static void sendKey(KeyEvent key);
+		static void SendKey(KeyEvent key);
 
 		// Sends a mouse event to another thread. MUST BE CONNECTED BEFORE DOING SO
-		static void sendMouse(MouseEvent evt);
+		static void SendMouse(MouseEvent evt);
 
 		// Sends a key to another thread. Doesn't need connection before doing so. (PostThreadMessage method)
 		// DEPRECATED
@@ -140,17 +140,17 @@ namespace pinterface {
 ********************************************************************************/
 	public:
 		/* Public static functions */
-		static std::vector<WinInfo_t> getWindowList();
-		static std::vector<WinInfo_t> getVisibleWindowList();
+		static std::vector<WinInfo_t> GetWindowList();
+		static std::vector<WinInfo_t> GetVisibleWindowList();
 		// Sends many keys
-		static void sendKeys(WinInfo_t window, std::vector<KeyEvent> keys);
+		static void SendKeys(WinInfo_t window, std::vector<KeyEvent> keys);
 		// Sends many mouse events
-		static void sendMouseEvents(WinInfo_t window, std::vector<MouseEvent> events);
+		static void SendMouseEvents(WinInfo_t window, std::vector<MouseEvent> events);
 		// Gets the window HWND from windows using the window information. If allow update is set, will update the info
 		// struct if the window can't be found
-		static HWND getWindowHWND(WinInfo_t& window, bool allowUpdate = false);
+		static HWND GetWindowHWND(WinInfo_t& window, bool allowUpdate = false);
 		// Returns the dimensions of a window from its window handle 
-		static WinDimensions_t getWindowDimensions(WinInfo_t window);
+		static WinDimensions_t GetWindowDimensions(WinInfo_t window);
 	};
 
 }

@@ -121,16 +121,16 @@ DWORD MouseEvent::scrollDelta() {
 std::vector<WinInfo_t> WinAssist::WIN_INFO(0);
 
 /* Private static functinos */
-void WinAssist::updateWinNames() {
+void WinAssist::UpdateWinNames() {
 	WIN_INFO.clear();
 	EnumWindows(WinCallbacks::winInfoList, reinterpret_cast<LPARAM>(&WIN_INFO));
 }
 
-bool WinAssist::checkWinHwndValidity(HWND hwnd) {
+bool WinAssist::CheckWinHwndValidity(HWND hwnd) {
 	return IsWindow(hwnd);
 }
 
-void WinAssist::sendKey(KeyEvent key) {
+void WinAssist::SendKey(KeyEvent key) {
 	if (key.type() == KeyEvent::EventType::KEVT_NONE)
 		return;
 
@@ -182,7 +182,7 @@ void WinAssist::sendKey(KeyEvent key) {
 	SendInput(index, input, sizeof(INPUT));
 }
 
-void WinAssist::sendMouse(MouseEvent evt) {
+void WinAssist::SendMouse(MouseEvent evt) {
 	if (evt.type() == MouseEvent::EventType::MEVT_NONE)
 		return;
 
@@ -311,11 +311,11 @@ void WinAssist::sendMouse(MouseEvent evt) {
 //	std::cout << "Sent key (PostMessage) '" << (char)key << "'" << std::endl;
 //}
 
-bool WinAssist::connectToThread(WinInfo_t window) {
+bool WinAssist::ConnectToThread(WinInfo_t window) {
 	return AttachThreadInput(GetCurrentThreadId(), window.tid, true);
 }
 
-bool WinAssist::disconnectThread(WinInfo_t window) {
+bool WinAssist::DisconnectThread(WinInfo_t window) {
 	return AttachThreadInput(GetCurrentThreadId(), window.tid, false);
 }
 
@@ -330,13 +330,13 @@ bool WinAssist::disconnectThread(WinInfo_t window) {
 		class WinAssist, public
 ********************************************************************************/
 /* Public static functions */
-std::vector<WinInfo_t> WinAssist::getWindowList() {
-	updateWinNames();
+std::vector<WinInfo_t> WinAssist::GetWindowList() {
+	UpdateWinNames();
 	return WIN_INFO;
 }
 
-std::vector<WinInfo_t> WinAssist::getVisibleWindowList() {
-	updateWinNames();
+std::vector<WinInfo_t> WinAssist::GetVisibleWindowList() {
+	UpdateWinNames();
 	std::vector<WinInfo_t> windows;
 	for (auto w : WIN_INFO) {
 		if (w.isVisible) {
@@ -346,48 +346,48 @@ std::vector<WinInfo_t> WinAssist::getVisibleWindowList() {
 	return windows;
 }
 
-void WinAssist::sendKeys(WinInfo_t window, std::vector<KeyEvent> keys) {
+void WinAssist::SendKeys(WinInfo_t window, std::vector<KeyEvent> keys) {
 	// Attempt to connect to the window
-	if (!connectToThread(window)) {
+	if (!ConnectToThread(window)) {
 		std::wcerr << "Failed to send keys: unable to connect to thread of window with title '" << window.title << "', pid="
 			<< window.pid << ", tid=" << window.tid << std::endl;
 		return; // We failed to connect, just return
 	}
 	// std::cout << "Connected thread" << std::endl;
-	SetActiveWindow(getWindowHWND(window, true));
+	SetActiveWindow(GetWindowHWND(window, true));
 	for (auto key : keys) {
-		sendKey(key);
+		SendKey(key);
 	}
 
-	while (!disconnectThread(window)) {
+	while (!DisconnectThread(window)) {
 		std::cerr << "Failed to disconnect from thread!!!" << std::endl;
 	}
 }
 
-void WinAssist::sendMouseEvents(WinInfo_t window, std::vector<MouseEvent> events) {
+void WinAssist::SendMouseEvents(WinInfo_t window, std::vector<MouseEvent> events) {
 	// Attempt to connect to the window
-	if (!connectToThread(window)) {
+	if (!ConnectToThread(window)) {
 		std::wcerr << "Failed to send mouse events: unable to connect to thread of window with title '" << window.title << "', pid="
 			<< window.pid << ", tid=" << window.tid << std::endl;
 		return; // We failed to connect, just return
 	}
 	// std::cout << "Connected thread" << std::endl;
-	SetActiveWindow(getWindowHWND(window, true));
+	SetActiveWindow(GetWindowHWND(window, true));
 	for (auto evt : events) {
-		sendMouse(evt);
+		SendMouse(evt);
 	}
 
-	while (!disconnectThread(window)) {
+	while (!DisconnectThread(window)) {
 		std::cerr << "Failed to disconnect from thread!!!" << std::endl;
 	}
 }
 
-HWND WinAssist::getWindowHWND(WinInfo_t& window, bool allowUpdate) {
+HWND WinAssist::GetWindowHWND(WinInfo_t& window, bool allowUpdate) {
 	HWND hwnd = FindWindow(NULL, window.title.c_str());
 	DWORD pid;
 	DWORD tid = GetWindowThreadProcessId(hwnd, &pid);
 	if (pid == window.pid || tid == window.tid) {
-		if(checkWinHwndValidity(hwnd))
+		if(CheckWinHwndValidity(hwnd))
 			return hwnd;
 	}
 	std::wcerr << "Unable to find window with title " << window.title;
@@ -396,22 +396,22 @@ HWND WinAssist::getWindowHWND(WinInfo_t& window, bool allowUpdate) {
 	// If we have update on, try to update the struct
 	if (allowUpdate) {
 		std::cout << "Attempting to update information: ";
-		std::vector<WinInfo_t> winList = getWindowList();
+		std::vector<WinInfo_t> winList = GetWindowList();
 		for (auto w : winList) {
 			if (STD_WSTRING_CONTAINS(w.title, window.title)) {
 				std::cout << "Match found by window title" << std::endl;
 				window = w;
-				return getWindowHWND(window);
+				return GetWindowHWND(window);
 			}
 			else if (w.pid == window.pid) {
 				std::cout << "Match found by pid" << std::endl;
 				window = w;
-				return getWindowHWND(window);
+				return GetWindowHWND(window);
 			}
 			else if (w.tid == window.tid) {
 				std::cout << "Match found by tid" << std::endl;
 				window = w;
-				return getWindowHWND(window);
+				return GetWindowHWND(window);
 			}
 		}
 	}
@@ -419,7 +419,7 @@ HWND WinAssist::getWindowHWND(WinInfo_t& window, bool allowUpdate) {
 	return 0;
 }
 
-WinDimensions_t WinAssist::getWindowDimensions(WinInfo_t window) {
+WinDimensions_t WinAssist::GetWindowDimensions(WinInfo_t window) {
 	WinDimensions_t dims;
 	dims.topLeft = std::make_tuple(0, 0);
 	dims.bottomRight = std::make_tuple(0, 0);
@@ -427,7 +427,7 @@ WinDimensions_t WinAssist::getWindowDimensions(WinInfo_t window) {
 	dims.height = 0;
 	RECT dimensions;
 
-	if (GetWindowRect(getWindowHWND(window), &dimensions)) {
+	if (GetWindowRect(GetWindowHWND(window), &dimensions)) {
 		dims.topLeft = std::make_tuple(dimensions.left, dimensions.top);
 		dims.bottomRight = std::make_tuple(dimensions.right, dimensions.bottom);
 		dims.width = dimensions.right - dimensions.left;
