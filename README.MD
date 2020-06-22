@@ -8,10 +8,8 @@ Due to current implementation, the window recieving the events must be in focus 
 
 ## Requirements
 
- - SFML 2.5.1
+ - None
  
 ## License information
 
-Please see the list of software licenses of importance:
-
- - [SFML License](https://www.sfml-dev.org/license.php)
+No license information at this time
