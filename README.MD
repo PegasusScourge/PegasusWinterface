@@ -9,6 +9,13 @@ Due to current implementation, the window recieving the events must be in focus 
 ## Requirements
 
  - None
+
+## Todo List
+
+ - [ ] Add non-blocking behaviour for mouse events
+ - [ ] Split PegasusTimer out
+ - [ ] Update application and window "lock" to increase consistency of lock
+ - [ ] Look into unfocused messages (PostMessages? Some other solution?)
  
 ## License information
 
