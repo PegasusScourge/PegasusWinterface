@@ -299,7 +299,7 @@ void WinAssist::sendMouse(MouseEvent evt) {
 		return;
 	}
 	// Dispatch the inputs
-	SendInput(inputQueue.size(), &inputQueue[0], sizeof(INPUT));
+	SendInput((UINT)inputQueue.size(), &inputQueue[0], sizeof(INPUT));
 	std::cout << " [SENT]" << std::endl;
 }
 

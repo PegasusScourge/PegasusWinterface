@@ -9,7 +9,6 @@ WinAPI windows.
 */
 
 #include "WinAssist.h"
-#include <SFML/System/Clock.hpp>
 
 namespace pinterface {
 
@@ -49,6 +48,34 @@ namespace pinterface {
 		int delayBefore();
 	};
 
+	class PegasusTimer {
+/*******************************************************************************
+		class PegasusTimer, private
+********************************************************************************/
+	private:
+		/* Private static API variables */
+		static bool INITIALIZED;
+		static LARGE_INTEGER COUNTER_FREQUENCY;
+		static double MS_PER_COUNT;
+
+		/* Private static API functions */
+		static void InitializeAPI();
+		static int CountsToMS(INT64 counts);
+
+		/* Private member variables */
+		INT64 m_startCount = 0;
+
+/*******************************************************************************
+		class PegasusTimer, public
+********************************************************************************/
+	public:
+		PegasusTimer();
+
+		void restart();
+
+		int getElapsedTimeAsMilliseconds();
+	};
+
 	class PegasusWinterface {
 /*******************************************************************************
 		class PegasusWinterface, private
@@ -60,8 +87,8 @@ namespace pinterface {
 		/* Private member variables */
 		bool m_bound = false;
 		bool m_blocking = false;
-		sf::Clock m_timingClockKey;
-		sf::Clock m_timingClockMouse;
+		PegasusTimer m_timingClockKey;
+		PegasusTimer m_timingClockMouse;
 		// unsigned int m_waitTime = 0;
 		std::vector<TimedKeyEvent> m_keyBuffer;
 		std::vector<TimedMouseEvent> m_mouseBuffer;

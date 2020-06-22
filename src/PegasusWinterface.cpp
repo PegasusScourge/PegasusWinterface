@@ -12,12 +12,12 @@ WinAPI windows.
 #include <string>
 #include <sstream>
 #include <iostream>
-#include <SFML/System.hpp>
 
 namespace pi = pinterface;
 using namespace pi;
 using std::wcout;
 using std::cout;
+using std::cerr;
 using std::endl;
 
 /*******************************************************************************
@@ -62,6 +62,69 @@ std::vector<KeyEvent>& TimedKeyEvent::getEvents() {
 
 int TimedKeyEvent::delayBefore() {
 	return m_delayBefore;
+}
+
+/*******************************************************************************
+		class PegasusTimer, private
+********************************************************************************/
+
+bool PegasusTimer::INITIALIZED = false;
+LARGE_INTEGER PegasusTimer::COUNTER_FREQUENCY;
+double PegasusTimer::MS_PER_COUNT = 0.0;
+
+void PegasusTimer::InitializeAPI() {
+	if (!INITIALIZED) {
+		if (!QueryPerformanceFrequency(&COUNTER_FREQUENCY)) {
+			cerr << "FAILED TO INITIALISE THE PegasusTimer API!!!!!" << endl;
+			return;
+		}
+		INITIALIZED = true;
+		INT64 freq = COUNTER_FREQUENCY.QuadPart;
+		MS_PER_COUNT = 1000.0 / (double)freq;
+		cout << "Initialised PegasusTimer API: freq=" << freq << " with " << MS_PER_COUNT << " ms per count" << endl;
+	}
+}
+
+int PegasusTimer::CountsToMS(INT64 counts) {
+	if (counts < 0) {
+		counts = 0 - counts; // Make counts always positive
+	}
+
+	double ms = (double)counts * MS_PER_COUNT;
+	return (int)ms;
+}
+
+/*******************************************************************************
+		class PegasusTimer, public
+********************************************************************************/
+
+PegasusTimer::PegasusTimer() {
+	if (!PegasusTimer::INITIALIZED)
+		PegasusTimer::InitializeAPI();
+	restart();
+}
+
+void PegasusTimer::restart() {
+	LARGE_INTEGER currentCount;
+	if (!QueryPerformanceCounter(&currentCount)) {
+		cerr << "PegasusTimer error when doing restart(): unable to query the performance counter" << endl;
+		m_startCount = 0;
+		return;
+	}
+	m_startCount = currentCount.QuadPart;
+}
+
+int PegasusTimer::getElapsedTimeAsMilliseconds() {
+	LARGE_INTEGER currentCount;
+	INT64 currentC;
+	if (!QueryPerformanceCounter(&currentCount)) {
+		cerr << "PegasusTimer error when doing getElapsedTimeAsMilliseconds(): unable to query the performance counter" << endl;
+		currentC = 0;
+	}
+	else {
+		currentC = currentCount.QuadPart;
+	}
+	return PegasusTimer::CountsToMS(currentC - m_startCount);
 }
 
 /*******************************************************************************
@@ -159,7 +222,7 @@ void PegasusWinterface::tick() {
 	// If the right amount of time has elapsed since the last key was sent, we can send the next one
 	TimedKeyEvent evt = m_keyBuffer.at(0);
 	bool emtpy = false;
-	while (!emtpy && m_timingClockKey.getElapsedTime().asMilliseconds() >= evt.delayBefore()) {
+	while (!emtpy && m_timingClockKey.getElapsedTimeAsMilliseconds() >= evt.delayBefore()) {
 		cout << "Non-blocking exec: ";
 		// Execute the event
 		WinAssist::sendKeys(m_winInfo, evt.getEvents());
@@ -187,7 +250,7 @@ void PegasusWinterface::executeKeys(std::vector<TimedKeyEvent> keys, bool append
 		// Process the keys here immediately and wait as necessary
 		for (auto evt : keys) {
 			// Wait until the key can be pressed
-			while (m_timingClockKey.getElapsedTime().asMilliseconds() < evt.delayBefore());
+			while (m_timingClockKey.getElapsedTimeAsMilliseconds() < evt.delayBefore());
 			// Execute the event
 			WinAssist::sendKeys(m_winInfo, evt.getEvents());
 			m_timingClockKey.restart();
@@ -212,7 +275,7 @@ void PegasusWinterface::executeMouse(std::vector<TimedMouseEvent> evts, bool app
 		// Process the keys here immediately and wait as necessary
 		for (auto evt : evts) {
 			// Wait until the key can be pressed
-			while (m_timingClockMouse.getElapsedTime().asMilliseconds() < evt.delayBefore());
+			while (m_timingClockMouse.getElapsedTimeAsMilliseconds() < evt.delayBefore());
 			// Execute the event
 			WinAssist::sendMouseEvents(m_winInfo, evt.getEvents());
 			m_timingClockMouse.restart();
