@@ -12,7 +12,6 @@ Due to current implementation, the window recieving the events must be in focus 
 
 ## Todo List
 
-<<<<<<< HEAD
  - [x] Add non-blocking behaviour for mouse events
  - [ ] Split PegasusTimer out
  - [ ] Update application and window "lock" to increase consistency of lock
