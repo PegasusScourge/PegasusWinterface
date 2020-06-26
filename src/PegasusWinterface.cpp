@@ -203,7 +203,7 @@ bool PegasusWinterface::isBlocking() {
 }
 
 bool PegasusWinterface::hasEventsInQueue() {
-	return !m_keyBuffer.empty();
+	return !m_keyBuffer.empty() || !m_mouseBuffer.empty();
 }
 
 void PegasusWinterface::tick() {
@@ -214,31 +214,50 @@ void PegasusWinterface::tick() {
 	if (m_blocking)
 		return;
 
-	// Check that we have an event left, if we don't then just return
-	if (m_keyBuffer.empty())
-		return;
-
-	/* KEY EVENTS */
-	// If the right amount of time has elapsed since the last key was sent, we can send the next one
-	TimedKeyEvent evt = m_keyBuffer.at(0);
-	bool emtpy = false;
-	while (!emtpy && m_timingClockKey.getElapsedTimeAsMilliseconds() >= evt.delayBefore()) {
-		cout << "Non-blocking exec: ";
-		// Execute the event
-		WinAssist::SendKeys(m_winInfo, evt.getEvents());
-		m_timingClockKey.restart();
-		// Remove the event
-		m_keyBuffer.erase(m_keyBuffer.begin()); // Erase this event
-		// Check if we have another event, if we do, load it up to see if it can be done immediately
-		if (m_keyBuffer.empty()) {
-			emtpy = true;
-		}
-		else {
-			evt = m_keyBuffer.at(0);
+	// Check that we have an event left
+	if (!m_keyBuffer.empty()) {
+		/* KEY EVENTS */
+		// If the right amount of time has elapsed since the last key was sent, we can send the next one
+		TimedKeyEvent evt = m_keyBuffer.at(0);
+		bool emtpy = false;
+		while (!emtpy && m_timingClockKey.getElapsedTimeAsMilliseconds() >= evt.delayBefore()) {
+			cout << "Non-blocking exec: ";
+			// Execute the event
+			WinAssist::SendKeys(m_winInfo, evt.getEvents());
+			m_timingClockKey.restart();
+			// Remove the event
+			m_keyBuffer.erase(m_keyBuffer.begin()); // Erase this event
+			// Check if we have another event, if we do, load it up to see if it can be done immediately
+			if (m_keyBuffer.empty()) {
+				emtpy = true;
+			}
+			else {
+				evt = m_keyBuffer.at(0);
+			}
 		}
 	}
 
-	/* MOUSE EVENTS */
+	if (!m_mouseBuffer.empty()) {
+		/* MOUSE EVENTS */
+		TimedMouseEvent evt = m_mouseBuffer.at(0);
+		bool emtpy = false;
+		while (!emtpy && m_timingClockMouse.getElapsedTimeAsMilliseconds() >= evt.delayBefore()) {
+			cout << "Non-blocking exec: ";
+			// Execute the event
+			WinAssist::SendMouseEvents(m_winInfo, evt.getEvents());
+			m_timingClockMouse.restart();
+			// Remove the event
+			m_mouseBuffer.erase(m_mouseBuffer.begin()); // Erase this event
+			// Check if we have another event, if we do, load it up to see if it can be done immediately
+			if (m_mouseBuffer.empty()) {
+				emtpy = true;
+			}
+			else {
+				evt = m_mouseBuffer.at(0);
+			}
+		}
+	}
+	
 }
 
 void PegasusWinterface::executeKeys(std::vector<TimedKeyEvent> keys, bool appendToQueue) {
